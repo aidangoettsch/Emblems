@@ -1,0 +1,4 @@
+name: Emblems
+version: @VERSION@
+author: yayes2
+main: network.lcc.factions.emblems.Main

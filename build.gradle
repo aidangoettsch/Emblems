@@ -1,0 +1,38 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+group 'network.lcc.factions'
+version '0.1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.7
+
+repositories {
+    mavenCentral()
+
+    maven {
+        name = "Spigot"
+        url = "https://hub.spigotmc.org/nexus/content/groups/public/"
+    }
+
+    maven {
+        name = "Sonatype"
+        url = "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+}
+
+dependencies {
+    compile group: 'org.spigotmc', name: 'spigot-api', version: '1.8.8-R0.1-SNAPSHOT'
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+
+task fatJar(type: Jar) {
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+
+    processResources {
+        filter ReplaceTokens, tokens: [
+                "VERSION": version
+        ]
+    }
+}
