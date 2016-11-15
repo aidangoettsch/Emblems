@@ -1,4 +1,21 @@
 name: Emblems
-version: @VERSION@
+version: @version@
 author: yayes2
 main: network.lcc.factions.emblems.Main
+depend: [ProtocolLib, Factions]
+commands:
+  e:
+    description: The base command
+    usage: /e
+    permission: emblems.command.all
+    permission-message: You don't have permission to run this command.
+  em:
+    description: The base command
+    usage: /em
+    permission: emblems.command.all
+    permission-message: You don't have permission to run this command.
+  emblems:
+    description: The base command
+    usage: /emblems
+    permission: emblems.command.all
+    permission-message: You don't have permission to run this command.
