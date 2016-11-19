@@ -9,17 +9,22 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.material.Wool;
 
 import java.util.ArrayList;
+import java.util.concurrent.locks.Lock;
 
-public class Monument {
+public class Monument implements Listener {
   private Team team;
   private Main plugin;
   private ArrayList<Emblem> emblems;
   private ArrayList<MonumentTrap> traps;
   private World world;
   private Location entrance;
+  private Location teleporter;
   private int x1;
   private int y1;
   private int z1;
@@ -54,9 +59,19 @@ public class Monument {
             } else if (wool.getColor() == DyeColor.BLACK) {
               traps.add(new DeathTrap(block.getLocation(), this, plugin));
             }
+          } else if (block.getType() == Material.IRON_PLATE){
+            teleporter = block.getLocation();
           }
         }
       }
+    }
+  }
+
+  @EventHandler
+  public void onPlayerMove(PlayerMoveEvent e) {
+    if (e.getPlayer().getLocation() == teleporter) {
+      Location target = teleporter;
+      target.setY(target.getBlockY() + 8);
     }
   }
 
