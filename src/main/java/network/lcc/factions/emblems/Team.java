@@ -2,7 +2,13 @@ package network.lcc.factions.emblems;
 
 import com.massivecraft.factions.entity.Faction;
 import com.massivecraft.factions.entity.FactionColl;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.bukkit.BukkitUtil;
+import com.sk89q.worldedit.regions.Region;
+import network.lcc.factions.emblems.entities.Emblem;
+import network.lcc.factions.emblems.entities.Monument;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -16,6 +22,8 @@ public class Team {
   private Faction faction;
   private List<OfflinePlayer> players = new ArrayList<>();
   private Main plugin;
+  private Monument monument;
+  private Emblem emblem;
   private FileConfiguration emblems;
 
   public Team(String name, Main plugin) {
@@ -27,9 +35,10 @@ public class Team {
     for (String uuid : playerUUIDs) {
       players.add(plugin.getServer().getOfflinePlayer(UUID.fromString(uuid)));
     }
+
   }
 
-  public Team(String name, Player captain, Main plugin) {
+  public Team(String name, Player captain, Main plugin, Region region) {
     this.name = name;
     this.captain = plugin.getServer().getOfflinePlayer(captain.getUniqueId());
     this.plugin = plugin;
@@ -37,6 +46,10 @@ public class Team {
     else plugin.createFaction(captain, name);
     addPlayer(captain);
     emblems = plugin.getEmblemData();
+    Vector v1 = region.getMaximumPoint();
+    Vector v2 = region.getMinimumPoint();
+    monument = new Monument(this, BukkitUtil.toWorld(region.getWorld()), v1.getBlockX(), v1.getBlockY(), v1.getBlockZ(), v2.getBlockX(), v2.getBlockY(), v2.getBlockZ());
+    emblem = new Emblem(this, monument, monument, , );
   }
 
   public String getName() {
@@ -61,6 +74,10 @@ public class Team {
 
   public void setFaction(Faction faction) {
     this.faction = faction;
+  }
+
+  public Emblem getEmblem() {
+    return emblem;
   }
 
   public void addPlayer(Player p) {

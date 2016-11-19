@@ -1,12 +1,16 @@
 package network.lcc.factions.emblems;
 
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import network.lcc.factions.emblems.command.EmblemsCommandListener;
+import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -121,5 +125,21 @@ public class Main extends JavaPlugin {
   public void createTeam(Team team) {
     teams.add(team);
     saveEmblemData();
+  }
+
+  @Nullable
+  private WorldGuardPlugin getWorldGuard() {
+    Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
+
+    if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
+      return null;
+    }
+
+    return (WorldGuardPlugin) plugin;
+  }
+
+  public Location upOne(Location location) {
+    location.setY(location.getY() + 1);
+    return location;
   }
 }

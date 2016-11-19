@@ -2,7 +2,7 @@ name: Emblems
 version: @version@
 author: yayes2
 main: network.lcc.factions.emblems.Main
-depend: [ProtocolLib, Factions]
+depend: [ProtocolLib, Factions, WorldEdit, WorldGuard]
 commands:
   e:
     description: The base command

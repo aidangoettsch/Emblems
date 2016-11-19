@@ -1,7 +1,8 @@
 package network.lcc.factions.emblems.entities;
 
-/**
- * Created by Aidan on 11/18/2016.
- */
 public enum EmblemState {
+  IN_MONUMENT,
+  ON_GROUND,
+  IN_INVENTORY,
+  CAPTURED
 }
