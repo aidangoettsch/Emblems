@@ -6,9 +6,10 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.regions.Region;
 import network.lcc.factions.emblems.entities.Emblem;
+import network.lcc.factions.emblems.entities.EmblemState;
 import network.lcc.factions.emblems.entities.Monument;
+import org.bukkit.DyeColor;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -25,6 +26,7 @@ public class Team {
   private Monument monument;
   private Emblem emblem;
   private FileConfiguration emblems;
+  private DyeColor color;
 
   public Team(String name, Main plugin) {
     emblems = plugin.getEmblemData();
@@ -48,8 +50,8 @@ public class Team {
     emblems = plugin.getEmblemData();
     Vector v1 = region.getMaximumPoint();
     Vector v2 = region.getMinimumPoint();
-    monument = new Monument(this, BukkitUtil.toWorld(region.getWorld()), v1.getBlockX(), v1.getBlockY(), v1.getBlockZ(), v2.getBlockX(), v2.getBlockY(), v2.getBlockZ());
-    emblem = new Emblem(this, monument, monument, , );
+    monument = new Monument(this, plugin, BukkitUtil.toWorld(region.getWorld()), v1.getBlockX(), v1.getBlockY(), v1.getBlockZ(), v2.getBlockX(), v2.getBlockY(), v2.getBlockZ());
+    emblem = new Emblem(this, monument, monument, monument.getOwnEmblem(), EmblemState.IN_MONUMENT);
   }
 
   public String getName() {
@@ -80,6 +82,10 @@ public class Team {
     return emblem;
   }
 
+  public DyeColor getColor() {
+    return color;
+  }
+
   public void addPlayer(Player p) {
     players.add(players.size(), p);
   }
@@ -96,5 +102,9 @@ public class Team {
       playerUUIDs.add(player.getUniqueId().toString());
     }
     emblems.set("teams." + name + ".players", playerUUIDs);
+  }
+
+  public void win() {
+
   }
 }

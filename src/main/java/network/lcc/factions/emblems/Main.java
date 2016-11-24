@@ -87,6 +87,10 @@ public class Main extends JavaPlugin {
     return gameState;
   }
 
+  public List<Team> getTeams() {
+    return teams;
+  }
+
   public void updateGameState(GameState newState) throws Exception {
     switch (newState) {
       case OFF:

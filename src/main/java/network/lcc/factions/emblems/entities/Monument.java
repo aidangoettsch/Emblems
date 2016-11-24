@@ -12,10 +12,11 @@ import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.material.Colorable;
 import org.bukkit.material.Wool;
 
 import java.util.ArrayList;
-import java.util.concurrent.locks.Lock;
+import java.util.Map;
 
 public class Monument implements Listener {
   private Team team;
@@ -31,6 +32,8 @@ public class Monument implements Listener {
   private int x2;
   private int y2;
   private int z2;
+  private Block ownEmblem;
+  private Map<Team, Block> capturePoints;
 
   public Monument(Team team, Main plugin, World world, int x1, int y1, int z1, int x2, int y2, int z2) {
     this.team = team;
@@ -61,6 +64,18 @@ public class Monument implements Listener {
             }
           } else if (block.getType() == Material.IRON_PLATE){
             teleporter = block.getLocation();
+            plugin.getServer().getPluginManager().registerEvents(this, plugin);
+          } else if (block.getType() == Material.STAINED_CLAY) {
+            Colorable clay = (Colorable) block;
+            if (clay.getColor() == team.getColor()) {
+              ownEmblem = block;
+            } else {
+              for (Team team : plugin.getTeams()) {
+                if (team.getColor() == clay.getColor()) {
+                  capturePoints.put(team, block);
+                }
+              }
+            }
           }
         }
       }
@@ -69,7 +84,9 @@ public class Monument implements Listener {
 
   @EventHandler
   public void onPlayerMove(PlayerMoveEvent e) {
-    if (e.getPlayer().getLocation() == teleporter) {
+    if (teleporter != null && e.getPlayer().getLocation().getBlockX() == teleporter.getBlockX() &&
+        e.getPlayer().getLocation().getBlockY() == teleporter.getBlockY()&&
+        e.getPlayer().getLocation().getBlockZ() == teleporter.getBlockZ()) {
       Location target = teleporter;
       target.setY(target.getBlockY() + 8);
     }
@@ -81,5 +98,24 @@ public class Monument implements Listener {
 
   public Location getEntrance() {
     return entrance;
+  }
+
+  public Block getOwnEmblem() {
+    return ownEmblem;
+  }
+
+  public Map<Team, Block> getCapturePoints() {
+    return capturePoints;
+  }
+
+  public void removeEmblem(Emblem emblem) {
+    emblems.remove(emblem);
+  }
+
+  public void capture(Emblem emblem) {
+    emblems.add(emblem);
+    if (emblems.size() == 3) {
+      team.win();
+    }
   }
 }
