@@ -10,7 +10,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -102,7 +101,7 @@ public class Main extends JavaPlugin {
     saveEmblemData();
   }
 
-  private void broadcast(String msg) {
+  public void broadcast(String msg) {
     TextComponent broadcast = new TextComponent("[");
     broadcast.setColor(ChatColor.YELLOW);
     TextComponent prefix = new TextComponent((String) cfg.get("chat.prefix"));
@@ -131,8 +130,7 @@ public class Main extends JavaPlugin {
     saveEmblemData();
   }
 
-  @Nullable
-  private WorldGuardPlugin getWorldGuard() {
+  public WorldGuardPlugin getWorldGuard() {
     Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
 
     if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
@@ -144,6 +142,11 @@ public class Main extends JavaPlugin {
 
   public Location upOne(Location location) {
     location.setY(location.getY() + 1);
+    return location;
+  }
+
+  public Location downOne(Location location) {
+    location.setY(location.getY() - 1);
     return location;
   }
 }

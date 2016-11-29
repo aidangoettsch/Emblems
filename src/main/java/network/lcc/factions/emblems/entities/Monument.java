@@ -13,16 +13,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.material.Colorable;
+import org.bukkit.material.Dye;
 import org.bukkit.material.Wool;
 
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.*;
 
 public class Monument implements Listener {
   private Team team;
   private Main plugin;
-  private ArrayList<Emblem> emblems;
-  private ArrayList<MonumentTrap> traps;
+  private ArrayList<Emblem> emblems = new ArrayList<>();
+  private ArrayList<MonumentTrap> traps = new ArrayList<>();
   private World world;
   private Location entrance;
   private Location teleporter;
@@ -33,7 +33,8 @@ public class Monument implements Listener {
   private int y2;
   private int z2;
   private Block ownEmblem;
-  private Map<Team, Block> capturePoints;
+  private boolean hasOwn;
+  private Map<Team, Block> capturePoints = new HashMap<>();
 
   public Monument(Team team, Main plugin, World world, int x1, int y1, int z1, int x2, int y2, int z2) {
     this.team = team;
@@ -46,7 +47,6 @@ public class Monument implements Listener {
     this.y2 = y2;
     this.z2 = z2;
 
-    emblems.add(team.getEmblem());
     scanArea();
   }
 
@@ -55,23 +55,24 @@ public class Monument implements Listener {
       for (int y = y1; y <= y2; y++) {
         for (int z = z1; z <= z2; z++) {
           Block block = world.getBlockAt(x, y, z);
+          System.out.println(block.getType().toString());
           if (block.getType() == Material.WOOL) {
-            Wool wool = (Wool) block;
-            if (wool.getColor() == DyeColor.GREEN) {
+            if (block.getData() == DyeColor.GREEN.getData()) {
               this.entrance = plugin.upOne(block.getLocation());
-            } else if (wool.getColor() == DyeColor.BLACK) {
+            } else if (block.getData() == DyeColor.BLACK.getData()) {
               traps.add(new DeathTrap(block.getLocation(), this, plugin));
             }
           } else if (block.getType() == Material.IRON_PLATE){
             teleporter = block.getLocation();
             plugin.getServer().getPluginManager().registerEvents(this, plugin);
           } else if (block.getType() == Material.STAINED_CLAY) {
-            Colorable clay = (Colorable) block;
-            if (clay.getColor() == team.getColor()) {
+            System.out.println(block.getData());
+            if (block.getData() == team.getColor().getData()) {
               ownEmblem = block;
             } else {
               for (Team team : plugin.getTeams()) {
-                if (team.getColor() == clay.getColor()) {
+                System.out.println(team.getColor());
+                if (block.getData() == team.getColor().getData()) {
                   capturePoints.put(team, block);
                 }
               }
@@ -89,6 +90,7 @@ public class Monument implements Listener {
         e.getPlayer().getLocation().getBlockZ() == teleporter.getBlockZ()) {
       Location target = teleporter;
       target.setY(target.getBlockY() + 8);
+      e.getPlayer().teleport(target);
     }
   }
 
@@ -112,9 +114,22 @@ public class Monument implements Listener {
     emblems.remove(emblem);
   }
 
+  public void setHasOwn(boolean hasOwn) {
+    this.hasOwn = hasOwn;
+    if (hasOwn) {
+      plugin.broadcast(team.getName() + " has recovered their emblem!");
+    } else {
+      plugin.broadcast(team.getName() + " has lost their emblem!");
+    }
+    if (emblems.size() == 2 && hasOwn) {
+      team.win();
+    }
+  }
+
   public void capture(Emblem emblem) {
     emblems.add(emblem);
-    if (emblems.size() == 3) {
+    plugin.broadcast(team.getName() + " has captured the " + emblem.getTeam().getName() + " emblem!");
+    if (emblems.size() == 2 && hasOwn) {
       team.win();
     }
   }
